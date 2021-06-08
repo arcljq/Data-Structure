@@ -1,146 +1,278 @@
+// µ¥Á´±íµÄcppÊµÏÖ£¬½ÏÎªÏê¾¡°æ
+// À´Ô´£ºÔ¬ÀÏÊ¦×¨À¸
+// ¹¦ÄÜÏê¾¡£¬Ó¦¸ÃÊÇÄ¿Ç°ÕÒµÃµ½µÄ×îÍêÕû£¬×îºÏÀíÒ²ÊÇ×îÏÈ½øµÄÊµÏÖ°æ±¾
+
+
 #include <iostream>
+#include <string>
 
-using namespace std;
+// ÕâÀïÊ¹ÓÃtypedefµÄºÃ´¦ÏÔ¶øÒ×¼û£ºÖ®ºóÖ»Òª¸Ä±äÕâÀïµÄ int£¬¾Í¿ÉÒÔ½«Á´±í¸ÄÔì³ÉÊÊÅäÆäËûÊı¾İÀàĞÍµÄÁ´±í
+typedef int ElementType;
+// Ò»¸öÈİÆ÷×ÜÊÇÒªÄÜ¹»¶ÔÆäÔªËØ½øĞĞ:Ôö¼Ó/É¾³ı/ĞŞ¸Ä/²éÑ¯
 
-struct List {
-    int val;
-    struct List* next;
+class SLListInt {
+public:
+	SLListInt(); // Ä¬ÈÏ¹¹Ôìº¯Êı
+	SLListInt(const SLListInt& from);	// ¸´ÖÆ¹¹Ôìº¯Êı
+	// Ç§ĞÁÍò¿àÖÕÓÚÀí½âÁË£¬ÕâÒ»²½ÊÇÔÚSLListIntÀàÄÚ²¿ÖØÔØÁË = ÔËËã·û£¬ÏêÏ¸µÄÖØÔØº¯ÊıÄÚÈİºóÃæÔÙĞ´
+	SLListInt& operator = (const SLListInt& from); 
+	~SLListInt(); //	Îö¹¹º¯Êı
+
+public:
+	void print(std::ostream& out);	// ±éÀú´òÓ¡º¯Êı
+	// ´Ë´¦ÎªºÎÒª½«²ÎÊıÉùÃ÷Îªconst
+	void push_front(const int& t);	// ÔÚÊ×¶Ë²åÈëÊı¾İ
+	void push_back(const int& t);	// ÔÚÎ²¶Ë²åÈëÊı¾İ
+
+	int pop_front(void);	// É¾³ıÊ×¶ËÊı¾İ
+
+	// ÕâÊÇ¸ÉÊ²Ã´
+	int& front(void);
+	// ÕâÓÖÊÇ¸ÉÊ²Ã´
+	const int& front(void) const;
+	// ÔİÊ±²»Çå³şÕâÁ½¶Ôº¯ÊıÊÇ×öÊ²Ã´ÓÃµÄ
+	int& back(void);
+	const int& back(void) const;
+
+	bool exist(const ElementType& e);	// ²éÕÒÖµeÊÇ·ñÔÚÁ´±íÄÚ
+	bool empty(void) const { return m_size == 0; } //	ÅĞ¶ÏÁ´±íÊÇ·ñÎª¿Õ
+	int size(void) const { return m_size; } // ·µ»ØÁ´±íÔªËØÊıÁ¿
+	void clear(void);	// É¾³ıËùÓĞÔªËØ
+private:
+	// µ¥¸ö½ÚµãµÄ¶¨Òå
+	class SLNode {
+		friend class SLListInt; // ÉùÃ÷ÓÑÔª£¬SLListInt²»ĞèÒªÍ¨¹ıpublic¾Í¿ÉÒÔ·ÃÎÊ
+	private:
+		SLNode();	// Ä¬ÈÏ¹¹Ôì
+		SLNode(const ElementType& t);	// ´ø²ÎÊı³õÊ¼»¯¹¹Ôì
+		~SLNode();
+	public:
+		ElementType m_data;	// ½ÚµãÊı¾İ
+		SLNode* m_next;	// ½ÚµãÖ¸Õë
+	};
+private:
+	void copy(const SLListInt& from);	// ¿½±´º¯Êı
+private:
+	/* Ö¸ÏòÍ·½Úµã£¬²»´æ´¢ÔªËØ£»
+		next Îª¿ÕÖ¸Õë±íÊ¾Ã»ÓĞ×îºóÒ»¸öÔªËØ£¬Ò²¾ÍÊÇ¿ÕÁ´±í£»
+		·½±ã´úÂë±àĞ´
+	*/
+	/* m_head ÓÃÀ´¼ò»¯´úÂë±àĞ´£¬ÈÃ´ó²¿·Ö±éÀúÀàµÄ³ÉÔ±º¯ÊıÊµÏÖ¶¼µÃµ½¼ò»¯*/
+	SLNode m_head;
+	/* Î²½ÚµãµÄÇ°Çı½Úµã£¬m_tail ÓÃÀ´±£Ö¤push_back µÄ³£ÊıÊ±¼äÍê³É£»
+		ÕâÒ²»áÒªÇóÈÎºÎ¿ÉÄÜ»áÈÃm_tail Ê§Ğ§µÄ³ÉÔ±º¯Êı¶¼ÒªÈ¥Î¬»¤m_tailµÄÓĞĞ§ĞÔ*/
+	SLNode m_tail;
+	/* Á´±íµ±Ç°ÓĞ¶àÉÙ¸öÔªËØ£¬m_size ÓÃÀ´±£Ö¤size³ÉÔ±º¯ÊıµÄ³£ÊıÊ±¼äÍê³É*/
+	int m_size;
 };
 
-void Init (struct List* L) {    // åˆ›å»ºé“¾è¡¨ // ä¸æ˜¯å¾ˆçœ‹å¾—æ˜ç™½
-    int cur;
-    cin >> cur;
-    while (cur!=-1){
-        struct List * ptr = (struct List* )malloc(sizeof(struct List));
-        ptr->val = cur;
-        ptr->next = NULL;
-        L->next = ptr;
-        L = L ->next;
-        cin >> cur;
-    }
+
+// ´òÓ¡µ÷ÊÔº¯Êı
+void check(bool b) {
+	if (b) 
+	{
+		std::cout << "PASS" << std::endl;
+	}
+	else
+	{
+		std::cout << "NOT PASS" << std::endl;
+	}
 }
 
-void Show(struct List* L){  // éå†é“¾è¡¨
-    cout << "éå†é“¾è¡¨ï¼š";
-        
-    while (L->next) {
-        cout << L->next -> val << " "; // æ‰“å°Lçš„ä¸‹ä¸€ä¸ªèŠ‚ç‚¹çš„å€¼
-        L = L ->next;   // æŒ‡å‘Lçš„ä¸‹ä¸€ä¸ªèŠ‚ç‚¹
-        // Lçš„å€¼å¹¶æ²¡æœ‰æ‰“å°ï¼Œæ˜¯å¦æ˜¯è¯´Lä½œä¸ºå¤´èŠ‚ç‚¹æœ¬èº«æ˜¯ç©ºçš„ã€‚
-    }
-}
-    
-void InsertList (strcut List*L, int k, int data){
-    strcut List* pre = NULL; // å­˜å‚¨ç¬¬K-1ä¸ªå…ƒç´ çš„å€¼
-    struct List* ptr = (struct List*)malloc(sizeof(struct List));   // ç”³è¯·ç©ºé—´
-    ptr->val =data;
-    ptr->next = NULL;
+// mainº¯ÊıµÄÖ÷Òª¹¦ÄÜÎªÌá¹©²âÊÔ
+int main() {
+	{
+		// test empty/size;
+		std::cout << "test empty() size()" << std::endl;
+		SLListInt slist;
+		check(slist.size() == 0);
+		check(slist.empty());
 
-    while (k && L-> next) { // æŸ¥æ‰¾åˆ°æ”¾ç½®dataå…ƒç´ çš„ä½ç½®
-    // è¿™ä¸ªåˆ¤åˆ«æ¡ä»¶ä¿è¯äº†ä¸¤ç‚¹ 1.æ‰¾åˆ°k 2. é“¾è¡¨ç»“æŸå‰è‹¥æ²¡æ‰¾åˆ°ï¼Œåœåœ¨æœ€åä¸€ä¸ªå…ƒç´ 
-    // è¯¦ç»†æ¥è¯´ï¼Œå³æ˜¯ä»è¡¨å¤´å¼€å§‹ï¼Œå¾€åèµ°Kæ­¥ï¼Œä½¿å¾—preåˆšå¥½æŒ‡å‘ç¬¬k-1ä¸ªå…ƒç´ ï¼ŒLæŒ‡å‘ç¬¬kä¸ªå…ƒç´ 
-    pre = L;
-    L = L->next;
-    k--;   
-    }
+		slist.push_back(123);
+		check(slist.size() == 1);
+		check(slist.empty() == false);
 
-    if (k>0){   // å¦‚æœK >0, ç›´æ¥æ’åˆ°é“¾è¡¨çš„è¡¨å°¾
-    L->next= ptr;
-    L=L->next;
-    }else{
-        pre->next = ptr;    // é“¾æ¥é“¾è¡¨
-        ptr->next = L
-    }
-}
+		slist.pop_front();
+		check(slist.size() == 0);
+		check(slist.empty());
+	}
+	// ÎªÊ²Ã´Òª·ÖÁ½¸ö´úÂë¿é
+	{
+		std::cout << "test copy constructor insert/get/" << std::endl;
+		SLListInt slist;
+		for (int i = 1; i <= 10; i++)
+		{
+			slist.push_back(i);
+		}
+		std::cout << "slist: ";
+		slist.print(std::cout);
+		SLListInt scopy(slist);
+		std::cout << "scopy:";
+		scopy.print(std::cout);
+		std::string s("12345678910");
+		std::string spop;
+		for (size_t i = 0; i < 10; i++)
+			spop.append(std::to_string(scopy.pop_front()));
+		check(spop == s);
+		check(slist.exist(10));
+		check(!slist.exist(11));
+		check(!scopy.exist(10));
+		check(!scopy.exist(11));
 
-int lengthList (struct List *L) {   // é“¾è¡¨æ±‚é•¿åº¦
-    int len=0;
-    while (L->next){
-        len ++
-        L=L->next;
-    }
-    return len;
-}
+		scopy.clear();
+		for (size_t i = 1; i <= 10; i++)
+			scopy.push_front(i);
+		check(scopy.back() == 1);
+		check(scopy.front() == 10);
 
-void DeleteList_by_value (struct List*L, int x) {    // åˆ é™¤å€¼ä¸ºxçš„èŠ‚ç‚¹ ï¼ˆé“¾è¡¨æ— é‡å¤å€¼ï¼‰// åˆ é™¤ç¬¬kä¸ªèŠ‚ç‚¹åŒç†
-    if (lengthList(L) <= 0 ) {
-        cout << "è¡¨ç©ºï¼Œæ²¡æœ‰å…ƒç´ å¯åˆ é™¤" << endl;
-        return;
-    }
-
-    struct List* ptr = L ->next;
-    struct List* pre = L;   // è®°å½•ptrçš„å‰ä¸€ä¸ªä½ç½®çš„èŠ‚ç‚¹
-    while (ptr) {
-        if (ptr->val == x) {
-            pre->next = ptr -> next;
-            free(ptr);  // é‡Šæ”¾ç©ºé—´
-            return; // æ“ä½œæˆåŠŸåè·³å‡ºå¾ªç¯
-        }
-        // æ²¡æ‰¾åˆ°ç›®æ ‡å€¼ï¼Œä¸€å¯¹æ“ä½œå­å„è‡ªå¾€ä¸‹ç§»åŠ¨ä¸€ä¸ªä½ç½®
-        pre = ptr;
-        ptr = pre ->next;
-    }
-}
-
-void DeleteList_by_Position(struct List*L, int k) { // åˆ é™¤ç¬¬Kä¸ªä½ç½®çš„èŠ‚ç‚¹
-    if (lengthList(L)<=0){
-        cout << "List is empty!";
-        return;     // jump out form the loop
-    }
-
-    // ä¸€å¯¹æ“ä½œå­
-    struct List* ptr = L->next;
-    struct List* pre = L;
-    // ä¸æ˜¯å¾ˆæ˜ç™½è¿™ä¸€éƒ¨åˆ†å†™çš„ï¼Œå¦‚æœk = 1ï¼Œ é‚£ä¹ˆåº”è¯¥æ˜¯å¯¹çš„?å¤´èŠ‚ç‚¹æœ¬èº«ä¸å­˜å‚¨
-    // k = k -1;  // å› ä¸ºå¦‚æœ k =1, ç›´æ¥ç”¨pre-> next = ptr->nextå°±æŠŠptråˆ æ‰äº†ï¼Œæ‰€ä»¥è¦å‡1
-    // è¿™è¿˜ä¸å¦‚--kå‘¢ ã€‚ã€‚ã€‚ã€‚
-    while (--k && ptr){
-        pte = ptr;
-        ptr= ptr ->next;
-    }
-    if (ptr == NULL || k>0){
-        cout << "è¦åˆ é™¤çš„ä½ç½®ä¸å­˜åœ¨" << endl;
-    }else{
-        pre -> next = ptr ->next; // åˆ é™¤ptrèŠ‚ç‚¹
-        free(ptr); // é‡Šæ”¾ç©ºé—´
-    }
+		spop.clear();
+		for (size_t i = 0; i < 10; i++)
+			spop.append(std::to_string(scopy.pop_front()));
+		check(spop == "10987654321");
+	}
+	{
+		std::cout << "test copy" << std::endl;
+		SLListInt slist;
+		{
+			SLListInt slist2(slist);
+		}
+		{
+			SLListInt slist3;
+			slist3 = slist;
+		}
+		slist.clear();
+	}
 }
 
-bool IsEmptyList(struct List* L) {
-    if(L->next ==NULL){
-        return true;
-    }else {
-        return false;
-    }
+// ÔÚÀà¶¨ÒåÊ±Ö»ĞèÉùÃ÷º¯Êı£¬ÏêÏ¸µÄº¯ÊıĞĞÎª¶¨Òå¿ÉÒÔºóÖÃ
+
+// ¹¹Ôìº¯ÊıÒÔ¼°Îö¹¹º¯ÊıµÄ³õÊ¼»¯
+// SLNODEµÄ¹¹Ôìº¯Êı£¬³õÊ¼»¯Ê±nextÎª¿ÕÖ¸Õë
+SLListInt::SLNode::SLNode(): m_next(nullptr){}
+
+SLListInt::SLNode::SLNode(const ElementType& t) : m_next(nullptr), m_data(t){}
+
+SLListInt::SLNode::~SLNode(){ }
+
+SLListInt::SLListInt(): m_size(0) { }
+
+SLListInt::SLListInt(const SLListInt& from) {
+	if (!from.empty())
+	{
+		copy(from);
+	}
+	std::cout << "SLListInt(const SLListInt & from)\n";
 }
 
-int GetElemList(struct List* L, int i){
-    struct List* ptr = L;
-    int k = i;  // æ ‡è®°içš„å€¼ï¼Œä»¥é˜²ä¸å­˜åœ¨è¾“å‡ºæ˜¾ç¤º
-    while (i >0 && ptr->next) {
-        ptr = ptr->next;
-        i--;
-    }
-
-    if (i == 0 && ptr != NULL) {    // å½“ i==0 å’Œ ptr ä¸ä¸ºç©ºä»£è¡¨æ‰¾åˆ°äº†ç¬¬iä¸ªä½ç½®çš„å…ƒç´ 
-        return ptr->val;
-    }else{
-        cout << "ç¬¬" << k << "ä¸ªä½ç½®ä¸å­˜åœ¨" << endl;
-        return -1;
-    }
+SLListInt& SLListInt::operator = (const SLListInt& from) {
+	std::cout << "SLListInt & DLList::operator = (const SLListInt &from)\n";
+	if (this == &from) {
+		return *this;
+	}
+	else
+	{
+		copy(from);
+		return *this;
+	}
 }
 
-void ClearList(struct List* L){ // æ¸…ç©ºé“¾è¡¨
-    struct List* ptr = L;
-    if (lengthList(L)>0) {  // åœ¨é“¾è¡¨é•¿åº¦èŒƒå›´å†…
-        while (ptr->next) {
-            // è¿™å¤šä¸€ä¸ªtempå˜é‡åªæ˜¯ä¸ºäº†é‡Šæ”¾ç©ºé—´å—ï¼Œçœ‹ä¸Šå»æœ‰ç‚¹ä¸é‚£ä¹ˆä¼˜é›…
-            struct List *temp = ptr->next; // å…¶å®å¯ä»¥ç›´æ¥æºç¨‹ auto temp = ptr->next ç°åœ¨çš„ç¼–è¯‘å™¨å·²ç»å¾ˆèªæ˜äº†
-            ptr->next = ptr->next->next;    // ptr->next èŠ‚ç‚¹ä»é“¾è¡¨ä¸­è¢«å‰”é™¤
-            free(temp); // é‡Šæ”¾ç©ºé—´
-        }
-        // æœ€åæ•ˆæœæ˜¯åªå‰©ä¸€ä¸ªå¤´èŠ‚ç‚¹
-    }
+SLListInt::~SLListInt() {
+	std::cout << "~SLListInt()\n";
+	clear();
 }
+
+void SLListInt::print(std::ostream& out) {
+	auto p = m_head.m_next;
+	while (p) {
+		out << p->m_data << " ";
+		p = p->m_next;
+	}
+	out << std::endl;
+}
+void SLListInt::push_front(const int& t) {
+	auto p = new SLNode(t);
+	auto oldFirst = m_head.m_next;
+	p->m_next = oldFirst;
+	m_head.m_next = p;
+	if (m_size == 0)
+		m_tail.m_next = p;
+	++m_size;
+}
+void SLListInt::push_back(const int& t) {
+	// ÕÒµ½±»²åÈëµÄ½ÚµãµÄÇ°Çı½Úµã£¬Ä¬ÈÏµÄÇ°Çı½Úµã¾ÍÊÇÍ·½Úµã
+	m_tail.m_next = new SLNode(t);
+	++m_size;
+}
+
+int SLListInt::pop_front(void) {
+	if (empty())
+	{
+		throw std::runtime_error("SLListInt::pop_front while list is empty!");
+	}
+	auto next = m_head.m_next->m_next;
+	auto p = m_head.m_next;
+	m_head.m_next = next;
+	int result = p->m_data;
+	delete p;
+	if (m_size == 1)
+		m_tail.m_next = m_head.m_next;
+	--m_size;
+	return result;
+}
+
+int& SLListInt::front(void) {
+	if (empty()) {
+		throw std::runtime_error("SLListInt::front called while *this is empty!");
+	}
+	return m_head.m_next->m_data;
+}
+
+int& SLListInt::back(void) {
+	if (empty())
+	{
+		throw std::runtime_error("SLListInt:back called while *this is empty!");
+	}
+	return m_tail.m_data;
+}
+
+const int& SLListInt::back(void) const {
+	if (empty())
+	{
+		throw std::runtime_error("SLListInt:back called while *this is empty!");
+	}
+	return m_tail.m_data;
+}
+
+bool SLListInt::exist(const ElementType& e) {
+	auto p = m_head.m_next;
+	while (p != nullptr) {
+		if (p->m_data == e)
+			return true;
+		p = p->m_next;
+	}
+	return false;
+}
+
+void SLListInt::clear(void) {
+	auto p = m_head.m_next;
+	while (p != nullptr) {
+		auto next = p->m_next;
+		delete p;
+		p = next;
+	}
+	m_head.m_next = m_tail.m_next = nullptr;
+	m_size = 0;
+}
+
+void SLListInt::copy(const SLListInt& from) {
+	clear();
+	auto p = from.m_head.m_next;
+	for (int i = 0; i < from.m_size; i++)
+	{
+		push_back(p->m_data);
+		p = p->m_next;
+	}
+}
+
 
 
