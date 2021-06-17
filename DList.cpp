@@ -1,5 +1,5 @@
 // 双链表结构
-// 
+// 来源:袁老师
 
 #include <iostream>
 #include <cassert>  // cassert包括了什么内容
@@ -33,12 +33,15 @@ public:
     void insert(iterator i, const int& datum);
 public:
     iterator begin() const noexcept;
-    iterator begin() noxecept;
+    iterator begin() noexcept;
+    iterator end() const noexcept;
+    iterator end() noexcept;
+
 public: // 迭代器
     class Node;
     class iterator{
         friend class DLListInt;
-        firend bool opertaor == (const typename iterator& lhs, const typename iterator& rhs) {
+        friend bool operator == (const typename iterator& lhs, const typename iterator& rhs) {
             return lhs.m_hold == rhs.m_hold;
         }
         friend bool operator != (const iterator& lhs, const iterator& rhs) { 
@@ -102,13 +105,13 @@ int main(){
     {
         // test empty/size;
         std:: cout << "test empty() size()" << std::endl;
-        DLListInt sys_errlist;
+        DLListInt slist;
         check(slist.size() == 0);
         check(slist.empty());
 
         slist.push_back(123);
         check(slist.size() == 1);
-        check(slist.empty(0 == false);
+        check(slist.empty() == false);
         
         slist.pop_front();
         check(slist.size() == 0);
@@ -189,7 +192,7 @@ int main(){
         assert(list1.back() == 1);
         assert(list1.size() == 2);
         {
-            auto t = (list1.front() ==1);
+            auto t2 = (list1.front() ==1);
             assert(t2 == 1);
         }
         assert(list1.front() == 1);
@@ -217,7 +220,7 @@ int main(){
         assert(*list1.begin() == 2);
         i = list1.begin();
         ++i;
-        list1.begin(i);
+        list1.erase(i);
         print(list1, "erase 3");
         i = list1.begin();
         ++i;
@@ -248,7 +251,7 @@ int main(){
         }
         {
             auto list2 = list1;
-            auto itr = list.begin();
+            auto itr = list2.begin();
             list2.erase(++itr); // erase 1
             list2.insert(++list2.begin(),1);
             auto itrOld = list1.begin();
@@ -301,14 +304,26 @@ int & DLListInt::front(){
     return this->m_first->m_data;
 }
 
-const int & DLListInt::fron(void) const{
+const int & DLListInt::front(void) const{
     return this->m_first->m_data;
 }
 
 void DLListInt::push_front(const int & t){
     auto p = new Node(t);
     if(empty()){
-        this ->m_first = this->m_hold->m_next;
-        return *this;
+        this->m_first = this->m_last = p
+    }
+    else {
+        p->m_next = this->m_first;
+        this->m_first->m_prev = p;
+        m_first = p;
+    }
+    ++this->m_size;
+}
+
+int DLListInt::pop_front(void){
+    if (m_size == 0){
+        
+
     }
 }
